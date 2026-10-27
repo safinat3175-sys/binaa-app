@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Binaa بناء</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--tx:#1d1d1b;--ac:#c2410c;--mu:#6b6b66;--bd:#e3dfd6}
+@media(prefers-color-scheme:dark){:root{--bg:#161614;--card:#222220;--tx:#f1efe9;--mu:#a5a39b;--bd:#37352f}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+.w{max-width:520px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:20px}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+input,select,textarea,button,.b{width:100%;padding:11px;margin:5px 0;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:16px}
+button,.b{background:var(--ac);color:#fff;border:0;display:block;text-align:center;text-decoration:none}
+button.s{width:auto;padding:6px 12px;background:var(--bd);color:var(--tx)}
+.i{border-top:1px solid var(--bd);padding:10px 0}
+.m{color:var(--mu);font-size:14px}
+.st{display:inline-block;padding:2px 8px;border-radius:99px;background:var(--bd);font-size:13px}
+.r{display:flex;gap:8px}.r button{margin:5px 0}
+</style>
+</head>
+<body>
+<div class="w">
+<div class="top"><b>بناء Binaa</b><button id="lg" class="s"></button></div>
+<div id="msg" class="m"></div>
+
+<div id="login" class="c">
+<p data-i="sub"></p>
+<input id="nm" data-p="name">
+<input id="ph" inputmode="tel" dir="ltr" placeholder="06XXXXXXXX">
+<select id="ro"><option value="worker" data-i="worker"></option><option value="contractor" data-i="contractor"></option></select>
+<input id="wl" data-p="wilaya">
+<button id="go" data-i="login"></button>
+<div id="step"></div>
+</div>
+
+<div id="app" hidden>
+<div class="c">
+<b data-i="new"></b>
+<select id="sp"></select>
+<input id="rw" data-p="wilaya">
+<textarea id="dt" rows="3" data-p="details"></textarea>
+<button id="sd" data-i="send"></button>
+</div>
+<div class="c"><b data-i="mine"></b><div id="mine"></div></div>
+<div id="adm" class="c" hidden><b data-i="all"></b><div id="all"></div></div>
+<button id="out" class="s" data-i="logout"></button>
+</div>
+</div>
+
+<script>
+let L=localStorage.lg||'ar',sess=localStorage.ss||'',me=localStorage.me||'';
+const $=i=>document.getElementById(i);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S=[['بنّاء','Mason'],['حدّاد','Blacksmith'],['نجّار','Carpenter'],['كهربائي','Electrician'],['سبّاك','Plumber'],['دهّان','Painter'],['مبلّط','Tiler'],['جبّاس','Plasterer'],['لحّام','Welder'],['عازل أسطح','Roofer'],['حفّار','Excavation'],['سائق آلات','Machine operator'],['مهندس','Engineer'],['مراقب أشغال','Site supervisor'],['مساح','Surveyor'],['عامل (Manœuvre)','Labourer (Manœuvre)']];
+const T={
+ar:{sub:'منصة ربط العمال بالمقاولين',name:'الاسم',wilaya:'الولاية',worker:'أنا عامل',contractor:'أنا مقاول',login:'دخول',open:'افتح بوت تلغرام لتأكيد رقمك',wait:'بانتظار التأكيد في تلغرام...',code:'رمز التحقق من تلغرام',verify:'تأكيد',new:'طلب جديد',details:'تفاصيل',send:'إرسال الطلب',mine:'طلباتي',all:'كل الطلبات (المدير)',pending:'قيد المراجعة',approved:'مقبول',rejected:'مرفوض',approve:'قبول',reject:'رفض',logout:'خروج',sent:'تم إرسال الطلب',empty:'لا توجد طلبات'},
+en:{sub:'Connecting workers and contractors',name:'Name',wilaya:'Wilaya',worker:"I'm a worker",contractor:"I'm a contractor",login:'Log in',open:'Open the Telegram bot to confirm your number',wait:'Waiting for confirmation in Telegram...',code:'Telegram verification code',verify:'Confirm',new:'New request',details:'Details',send:'Send request',mine:'My requests',all:'All requests (admin)',pending:'Pending',approved:'Approved',rejected:'Rejected',approve:'Approve',reject:'Reject',logout:'Log out',sent:'Request sent',empty:'No requests'}};
+
+function msg(t){$('msg').textContent=t||''}
+async function api(p,b){
+const r=await fetch(p,{method:b?'POST':'GET',headers:{'content-type':'application/json','x-session':sess},body:b?JSON.stringify(b):undefined});
+const j=await r.json().catch(()=>({}));
+if(r.status==401&&sess)out();
+if(!r.ok)throw new Error(j.error||'Error');return j}
+
+function tr(){const t=T[L];
+document.documentElement.lang=L;document.documentElement.dir=L=='ar'?'rtl':'ltr';
+document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t[e.dataset.i]);
+document.querySelectorAll('[data-p]').forEach(e=>e.placeholder=t[e.dataset.p]);
+$('lg').textContent=L=='ar'?'EN':'عربي';
+const sp=$('sp'),v=sp.value||0;
+sp.innerHTML=S.map((s,i)=>`<option value="${i}">${s[L=='ar'?0:1]}</option>`).join('');sp.value=v;
+if(sess){loadMine();if(me=='admin')loadAll()}}
+$('lg').onclick=()=>{L=L=='ar'?'en':'ar';localStorage.lg=L;tr()};
+
+function done(j){sess=j.session;me=j.role;localStorage.ss=sess;localStorage.me=me;show()}
+function show(){$('login').hidden=true;$('app').hidden=false;$('adm').hidden=me!='admin';msg('');tr()}
+function out(){localStorage.removeItem('ss');localStorage.removeItem('me');location.reload()}
+$('out').onclick=out;
+
+function poll(t){const iv=setInterval(async()=>{try{const j=await api('/api/login/poll?token='+t);if(j.ok){clearInterval(iv);done(j)}}catch{}},2000)}
+
+$('go').onclick=async()=>{try{
+const j=await api('/api/login/start',{phone:$('ph').value,role:$('ro').value,name:$('nm').value,wilaya:$('wl').value});
+const t=T[L];
+if(j.mode=='link'){
+$('step').innerHTML=`<a class="b" href="${esc(j.url)}" target="_blank">${t.open}</a><p class="m">${t.wait}</p>`;poll(j.token)}
+else{
+$('step').innerHTML=`<input id="cd" inputmode="numeric" dir="ltr" placeholder="${t.code}"><button id="vf">${t.verify}</button>`;
+$('vf').onclick=async()=>{try{done(await api('/api/login/verify',{token:j.token,code:$('cd').value}))}catch(e){msg(e.message)}}}
+}catch(e){msg(e.message)}};
+
+$('sd').onclick=async()=>{try{
+await api('/api/requests',{specialty:S[$('sp').value].join(' / '),wilaya:$('rw').value,details:$('dt').value});
+$('dt').value='';msg(T[L].sent);loadMine();if(me=='admin')loadAll()}catch(e){msg(e.message)}};
+
+const badge=s=>`<span class="st">${T[L][s]||s}</span>`;
+async function loadMine(){const a=await api('/api/requests/mine');
+$('mine').innerHTML=a.length?a.map(r=>`<div class="i"><b>${esc(r.specialty)}</b> ${badge(r.status)}<div class="m">${esc(r.wilaya)} ${esc(r.details)}</div></div>`).join(''):`<p class="m">${T[L].empty}</p>`}
+async function loadAll(){const a=await api('/api/admin/requests');
+$('all').innerHTML=a.length?a.map(r=>`<div class="i"><b>${esc(r.specialty)}</b> ${badge(r.status)}
+<div class="m">${esc(r.name)} · ${esc(r.role)} · <span dir="ltr">${esc(r.phone)}</span></div>
+<div class="m">${esc(r.wilaya)} ${esc(r.details)}</div>
+<div class="r"><button onclick="dec(${r.id},'approved')">${T[L].approve}</button><button onclick="dec(${r.id},'rejected')" style="background:#6b6b66">${T[L].reject}</button></div></div>`).join(''):`<p class="m">${T[L].empty}</p>`}
+async function dec(id,s){try{await api('/api/admin/requests/'+id,{status:s});loadAll();loadMine()}catch(e){msg(e.message)}}
+
+tr();if(sess)show();
+</script>
+</body>
+</html>

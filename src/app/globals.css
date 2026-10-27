@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* ── Binaa original theme (preserved) ─────────────────────────── */
+:root{--bg:#e9ecef;--card:#fff;--tx:#1f2933;--mut:#66727e;--steel:#2b3440;--hv:#ffc400;--bd:#d3d8de;--ok:#18794e;--no:#b42318;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181d;--card:#1e252d;--tx:#eef1f4;--mut:#98a3ae;--steel:#0d1013;--bd:#313b46;--ok:#4cc38a;--no:#ff8a80}}
+:root[data-theme="dark"]{--bg:#14181d;--card:#1e252d;--tx:#eef1f4;--mut:#98a3ae;--steel:#0d1013;--bd:#313b46;--ok:#4cc38a;--no:#ff8a80}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.6 Cairo,Tahoma,"Segoe UI",sans-serif}
+.binaa-header{background:var(--steel);color:#fff;padding:14px 16px 18px;position:relative}
+.binaa-header:after{content:"";position:absolute;inset:auto 0 0 0;height:8px;background:repeating-linear-gradient(-45deg,var(--hv) 0 12px,#1a1a1a 12px 24px)}
+.binaa-top{display:flex;justify-content:space-between;align-items:center;max-width:760px;margin:auto}
+.binaa-top h1{margin:0;font-size:26px;font-weight:800}.binaa-top h1 small{display:block;font-size:13px;font-weight:400;opacity:.8}
+.binaa-main{max-width:760px;margin:auto;padding:16px}
+.binaa-tabs{display:flex;gap:6px;margin-bottom:14px}
+.binaa-tabs button{flex:1;padding:10px 4px;border:2px solid var(--bd);background:var(--card);color:var(--tx);font:600 15px Cairo,sans-serif;border-radius:8px;cursor:pointer}
+.binaa-tabs button.on{background:var(--hv);border-color:var(--hv);color:#1a1a1a}
+.binaa-lang{background:none;border:1px solid #fff8;color:#fff;border-radius:6px;padding:4px 12px;font:600 14px Cairo,sans-serif;cursor:pointer}
+.binaa-card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px}
+.binaa-card h3{margin:0 0 4px;font-size:17px}.binaa-mut{color:var(--mut);font-size:14px}
+.binaa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.binaa-card label{display:block;font-size:13px;color:var(--mut);margin-bottom:2px}
+.binaa-card input,.binaa-card select,.binaa-input{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:400 16px Cairo,sans-serif;margin-bottom:8px}
+.binaa-card :focus-visible{outline:3px solid var(--hv);outline-offset:2px}
+.binaa-btn{border:0;border-radius:8px;padding:10px 16px;font:600 15px Cairo,sans-serif;background:var(--steel);color:#fff;cursor:pointer}
+.binaa-btn.y{background:var(--hv);color:#1a1a1a}.binaa-btn.ok{background:var(--ok);color:#fff}.binaa-btn.no{background:var(--no);color:#fff}.binaa-btn:disabled{opacity:.5}
+.binaa-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.binaa-tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:13px;font-weight:600;border:1px solid var(--bd)}
+.binaa-s-pending{background:#ffc40033}.binaa-s-approved{color:var(--ok);border-color:var(--ok)}.binaa-s-rejected{color:var(--no);border-color:var(--no)}
+.binaa-ph{font-weight:800;direction:ltr;unicode-bidi:embed}
+.binaa-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.binaa-stats div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center}
+.binaa-stats b{display:block;font-size:26px}
+#binaa-toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--steel);color:#fff;padding:10px 18px;border-radius:8px;display:none;max-width:90%;border-inline-start:6px solid var(--hv);z-index:60}
+#binaa-toast.show{display:block}
+.binaa-secure{display:flex;gap:8px;align-items:flex-start;background:var(--card);border:1px dashed var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--mut)}
+.binaa-theme{background:none;border:1px solid #fff8;color:#fff;border-radius:6px;padding:4px 10px;font:600 14px Cairo,sans-serif;cursor:pointer}
+@keyframes binaa-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.binaa-anim{animation:binaa-in .35s ease both}
+
+/* ── OTP / auth additions ── */
+.binaa-btn.full{width:100%;display:block;text-align:center;padding:13px 16px;font-size:16px;margin-top:6px;text-decoration:none}
+.binaa-btn.ghost{background:transparent;color:var(--tx);border:2px solid var(--bd)}
+.binaa-otp{letter-spacing:.45em;text-align:center;font-size:26px;font-weight:800;direction:ltr}
+.binaa-err{color:var(--no);font-size:14px;margin:0 0 8px;font-weight:600}
+.binaa-note{font-size:13px;color:var(--mut);margin:6px 0 0}
+.binaa-steps{display:flex;gap:6px;margin:0 0 12px}
+.binaa-steps span{flex:1;height:5px;border-radius:99px;background:var(--bd)}
+.binaa-steps span.on{background:var(--hv)}
+.binaa-check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--tx);margin:10px 0}
+.binaa-check input{width:20px;height:20px;margin:2px 0 0;flex:none}
+.binaa-textarea{min-height:90px;resize:vertical}
+.binaa-wait{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:14px;margin-top:10px}
+.binaa-wait i{width:10px;height:10px;border-radius:50%;background:var(--hv);display:inline-block;animation:binaa-blink 1.2s infinite}
+@keyframes binaa-blink{50%{opacity:.25}}
+details.binaa-terms{font-size:13px;color:var(--mut);margin:6px 0}
+details.binaa-terms summary{cursor:pointer;font-weight:600;color:var(--tx)}
+/* ── Landing portal cards ── */
+.binaa-portals{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:560px){.binaa-portals{grid-template-columns:1fr 1fr}}
+.binaa-portal{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:start;background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:18px 16px;color:var(--tx);text-decoration:none;cursor:pointer;font:inherit;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.binaa-portal:hover,.binaa-portal:focus-visible{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.14)}
+.binaa-portal-public{border-color:var(--hv);background:linear-gradient(160deg,var(--card) 60%,color-mix(in srgb,var(--hv) 14%,var(--card)))}
+.binaa-portal-admin{border-style:dashed}
+.binaa-portal-admin:hover{border-color:var(--steel);border-style:solid}
+.binaa-portal-icon{font-size:30px;line-height:1}
+.binaa-portal-title{font-size:19px;font-weight:800}
+.binaa-portal-sub{font-size:13px;color:var(--mut);min-height:38px}
+.binaa-portal-cta{margin-top:6px;align-self:stretch;text-align:center}
+.binaa-back{background:none;border:0;color:var(--mut);font:600 14px Cairo,sans-serif;padding:0 0 10px;cursor:pointer}
+.binaa-back:hover{color:var(--tx)}
+.binaa-userbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;font-size:14px}
+.binaa-pill{background:var(--card);border:1px solid var(--bd);border-radius:99px;padding:4px 12px;font-weight:600}
